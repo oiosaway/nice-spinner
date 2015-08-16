@@ -22,6 +22,7 @@ import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.List;
@@ -45,6 +46,7 @@ public class NiceSpinner extends TextView {
     private NiceSpinnerBaseAdapter mAdapter;
     private AdapterView.OnItemClickListener mOnItemClickListener;
     private AdapterView.OnItemSelectedListener mOnItemSelectedListener;
+    private NiceSpinnerBaseAdapter.SpinnerFormatter mFormatter;
     private boolean mHideArrow;
 
     @SuppressWarnings("ConstantConditions")
@@ -85,7 +87,7 @@ public class NiceSpinner extends TextView {
             mSelectedIndex = bundle.getInt(SELECTED_INDEX);
 
             if (mAdapter != null) {
-                setText(mAdapter.getItemInDataset(mSelectedIndex).toString());
+                setSpinnerText(mAdapter.getItemInDataset(mSelectedIndex).toString());
                 mAdapter.notifyItemSelected(mSelectedIndex);
             }
 
@@ -138,7 +140,7 @@ public class NiceSpinner extends TextView {
 
                 mAdapter.notifyItemSelected(position);
                 mSelectedIndex = position;
-                setText(mAdapter.getItemInDataset(position).toString());
+                setSpinnerText(mAdapter.getItemInDataset(position).toString());
                 dismissDropDown();
             }
         });
@@ -182,6 +184,14 @@ public class NiceSpinner extends TextView {
         typedArray.recycle();
     }
 
+    public void setSpinnerText(String text) {
+        if (mFormatter != null) {
+            setText(mFormatter.format(text));
+        } else {
+            setText(text);
+        }
+    }
+
     public int getSelectedIndex() {
         return mSelectedIndex;
     }
@@ -195,7 +205,7 @@ public class NiceSpinner extends TextView {
             if (position >= 0 && position <= mAdapter.getCount()) {
                 mAdapter.notifyItemSelected(position);
                 mSelectedIndex = position;
-                setText(mAdapter.getItemInDataset(position).toString());
+                setSpinnerText(mAdapter.getItemInDataset(position).toString());
             } else {
                 throw new IllegalArgumentException("Position must be lower than adapter count!");
             }
@@ -223,7 +233,20 @@ public class NiceSpinner extends TextView {
 
     private void setAdapterInternal(@NonNull NiceSpinnerBaseAdapter adapter) {
         mListView.setAdapter(adapter);
-        setText(adapter.getItemInDataset(mSelectedIndex).toString());
+        setSpinnerText(adapter.getItemInDataset(mSelectedIndex).toString());
+    }
+
+    public void setDropdownFormatter(@NonNull NiceSpinnerBaseAdapter.SpinnerFormatter formatter) {
+        if (mAdapter != null) {
+            mAdapter.setSpinnerFormatter(formatter);
+        }
+    }
+
+    public void setSelectionFormatter(@NonNull NiceSpinnerBaseAdapter.SpinnerFormatter formatter) {
+        mFormatter = formatter;
+        if (mAdapter != null) {
+            setSpinnerText(mAdapter.getItemInDataset(mSelectedIndex).toString());
+        }
     }
 
     @Override

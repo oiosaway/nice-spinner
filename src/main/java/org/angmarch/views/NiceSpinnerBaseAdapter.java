@@ -3,6 +3,7 @@ package org.angmarch.views;
 import android.content.Context;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
+import android.text.Spannable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 public abstract class NiceSpinnerBaseAdapter<T> extends BaseAdapter {
     protected Context mContext;
     protected int mSelectedIndex;
+    protected SpinnerFormatter mFormatter;
 
     public NiceSpinnerBaseAdapter(Context context) {
         mContext = context;
@@ -39,7 +41,15 @@ public abstract class NiceSpinnerBaseAdapter<T> extends BaseAdapter {
             textView = ((ViewHolder) convertView.getTag()).textView;
         }
 
-        textView.setText(getItem(position).toString());
+        T item = getItem(position);
+
+        if (item != null) {
+            if (mFormatter != null) {
+                textView.setText(mFormatter.format(item.toString()));
+            } else {
+                textView.setText(item.toString());
+            }
+        }
 
         return convertView;
     }
@@ -50,6 +60,10 @@ public abstract class NiceSpinnerBaseAdapter<T> extends BaseAdapter {
 
     public void notifyItemSelected(int index) {
         mSelectedIndex = index;
+    }
+
+    public void setSpinnerFormatter(SpinnerFormatter formatter) {
+        mFormatter= formatter;
     }
 
     @Override
@@ -72,5 +86,9 @@ public abstract class NiceSpinnerBaseAdapter<T> extends BaseAdapter {
         public ViewHolder(TextView textView) {
             this.textView = textView;
         }
+    }
+
+    public interface SpinnerFormatter {
+        Spannable format(String text);
     }
 }
