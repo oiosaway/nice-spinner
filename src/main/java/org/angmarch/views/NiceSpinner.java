@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -116,7 +117,7 @@ public class NiceSpinner extends TextView {
         setPadding(resources.getDimensionPixelSize(R.dimen.three_grid_unit), defaultPadding, defaultPadding,
             defaultPadding);
         setClickable(true);
-        setBackgroundResource(R.drawable.selector);
+        setBackgroundColor(Color.argb(255,242,242,242));
 
         mListView = new ListView(context);
         // Set the spinner's id into the listview to make it pretend to be the right parent in
